@@ -38,6 +38,7 @@ const CoinflipGame = () => {
         setMessage('Sorry, you lost the bet.');
       }
     } catch (err) {
+      console.error(err);
       setMessage('Transaction failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -49,7 +50,7 @@ const CoinflipGame = () => {
       SystemProgram.transfer({
         fromPubkey: TREASURY_PUBLIC_KEY,
         toPubkey: publicKey,
-        lamports: amount * 2 * 1e9, // Convert SOL to lamports
+        lamports: amount * 2 * 1e9,
       })
     );
 
@@ -62,7 +63,7 @@ const CoinflipGame = () => {
       SystemProgram.transfer({
         fromPubkey: publicKey,
         toPubkey: TREASURY_PUBLIC_KEY,
-        lamports: amount * 1e9, // Convert SOL to lamports
+        lamports: amount * 1e9,
       })
     );
 
@@ -71,24 +72,40 @@ const CoinflipGame = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold mb-8">Solana Coinflip Game</h1>
-      <WalletConnectButton />
-      <BetForm
-        betAmount={betAmount}
-        setBetAmount={setBetAmount}
-        sideChosen={sideChosen}
-        setSideChosen={setSideChosen}
-      />
-      {message && <p className="text-lg text-blue-400 mb-4">{message}</p>}
-      <button
-        onClick={handleFlip}
-        className={`px-6 py-3 bg-green-500 rounded mb-4 hover:bg-green-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-        disabled={isLoading}
-      >
-        {isLoading ? 'Processing...' : 'Flip Coin'}
-      </button>
-      <CoinflipResult result={result} />
+    <div className="flex flex-col min-h-screen bg-gray-900 text-white">
+      {/* Header Section */}
+      <header className="bg-gray-800 p-4 shadow-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-3xl font-bold">Solana Coinflip Game</h1>
+          <WalletConnectButton />
+        </div>
+      </header>
+
+      {/* Main Content Section */}
+      <main className="flex-grow flex flex-col items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
+          <BetForm
+            betAmount={betAmount}
+            setBetAmount={setBetAmount}
+            sideChosen={sideChosen}
+            setSideChosen={setSideChosen}
+          />
+          {message && <p className="text-lg text-blue-400 mb-4 text-center">{message}</p>}
+          <button
+            onClick={handleFlip}
+            className={`w-full py-3 bg-green-500 rounded-md text-lg font-semibold hover:bg-green-600 transition-colors duration-200 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : 'Flip Coin'}
+          </button>
+          <CoinflipResult result={result} />
+        </div>
+      </main>
+
+      {/* Footer Section */}
+      <footer className="bg-gray-800 p-4 text-center">
+        <p className="text-sm text-gray-400">© 2024 Coinflip Game. All rights reserved.</p>
+      </footer>
     </div>
   );
 };
