@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const BetForm = ({ betAmount, setBetAmount, sideChosen, setSideChosen }) => {
   return (
@@ -15,20 +15,28 @@ const BetForm = ({ betAmount, setBetAmount, sideChosen, setSideChosen }) => {
       </label>
       <div className="flex space-x-4 mb-6">
         <button
-          onClick={() => setSideChosen('heads')}
+          onClick={() => setSideChosen("heads")}
           className={`px-6 py-3 rounded-md font-medium text-white transition duration-300 ${
-            sideChosen === 'heads' ? 'bg-blue-600 shadow-lg' : 'bg-gray-700 hover:bg-gray-600'
+            sideChosen === "heads" ? "bg-blue-600 shadow-lg" : "bg-gray-700 hover:bg-gray-600"
           }`}
         >
-          Heads
+          <img
+            className="rounded-full"
+            src="https://tse2.mm.bing.net/th?id=OIP.hn2gZV90k3POf8JlWA5EgwHaHa&pid=Api&P=0&h=180"
+            alt="Heads"
+          />
         </button>
         <button
-          onClick={() => setSideChosen('tails')}
+          onClick={() => setSideChosen("tails")}
           className={`px-6 py-3 rounded-md font-medium text-white transition duration-300 ${
-            sideChosen === 'tails' ? 'bg-blue-600 shadow-lg' : 'bg-gray-700 hover:bg-gray-600'
+            sideChosen === "tails" ? "bg-blue-600 shadow-lg" : "bg-gray-700 hover:bg-gray-600"
           }`}
         >
-          Tails
+          <img
+            className="rounded-full"
+            src="https://tse2.mm.bing.net/th?id=OIP.UOu_C3Vk0MliRUZdiMp7KgHaHa&pid=Api&P=0&h=180"
+            alt="Tails"
+          />
         </button>
       </div>
     </div>

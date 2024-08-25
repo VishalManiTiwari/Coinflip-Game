@@ -3,8 +3,6 @@ import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 import { PhantomWalletAdapter } from '@solana/wallet-adapter-wallets';
 import { clusterApiUrl } from '@solana/web3.js';
-
-// Import CSS for wallet modal styles
 import '@solana/wallet-adapter-react-ui/styles.css';
 
 const WalletContextProvider = ({ children }) => {

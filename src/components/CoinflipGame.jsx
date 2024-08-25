@@ -5,9 +5,7 @@ import WalletConnectButton from './WalletConnectButton';
 import BetForm from './BetForm';
 import CoinflipResult from './CoinflipResult';
 
-const TREASURY_PUBLIC_KEY = '2PmyuJ9FxC4Q1jZB8tdLbRc4rfyzYzpm9AzT8i6DsnAA'; 
-const treasuryPublicKey = new PublicKey(TREASURY_PUBLIC_KEY);
-
+const TREASURY_PUBLIC_KEY = new PublicKey('2PmyuJ9FxC4Q1jZB8tdLbRc4rfyzYzpm9AzT8i6DsnAA');
 const connection = new Connection(clusterApiUrl('devnet'));
 
 const CoinflipGame = () => {
@@ -15,63 +13,61 @@ const CoinflipGame = () => {
   const [betAmount, setBetAmount] = useState(0.1);
   const [sideChosen, setSideChosen] = useState('heads');
   const [result, setResult] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState('');
 
-  const flipCoin = () => Math.random() < 0.5 ? 'heads' : 'tails';
+  const flipCoin = () => (Math.random() < 0.5 ? 'heads' : 'tails');
 
-  // Handle coin flip and transaction logic
   const handleFlip = async () => {
     if (!publicKey) {
-      alert('Please connect your wallet');
+      setMessage('Please connect your wallet.');
       return;
     }
 
+    setMessage('');
+    setIsLoading(true);
     const flipResult = flipCoin();
     setResult(flipResult);
 
-    if (flipResult === sideChosen) {
-      await payoutUser(betAmount);
-    } else {
-      await sendToTreasury(betAmount);
+    try {
+      if (flipResult === sideChosen) {
+        await payoutUser(betAmount);
+        setMessage('Congratulations! You won the bet.');
+      } else {
+        await sendToTreasury(betAmount);
+        setMessage('Sorry, you lost the bet.');
+      }
+    } catch (err) {
+      setMessage('Transaction failed. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Function to payout user
   const payoutUser = async (amount) => {
-    if (!publicKey) return;
-
     const transaction = new Transaction().add(
       SystemProgram.transfer({
-        fromPubkey: treasuryPublicKey,
+        fromPubkey: TREASURY_PUBLIC_KEY,
         toPubkey: publicKey,
-        lamports: amount * 2 * 1e9, 
+        lamports: amount * 2 * 1e9, // Convert SOL to lamports
       })
     );
 
-    try {
-      await sendTransaction(transaction, connection);
-      console.log('Payout successful');
-    } catch (error) {
-      console.error('Payout failed:', error);
-    }
+    await sendTransaction(transaction, connection);
+    console.log('Payout successful');
   };
 
   const sendToTreasury = async (amount) => {
-    if (!publicKey) return;
-
     const transaction = new Transaction().add(
       SystemProgram.transfer({
         fromPubkey: publicKey,
-        toPubkey: treasuryPublicKey,
-        lamports: amount * 1e9,
+        toPubkey: TREASURY_PUBLIC_KEY,
+        lamports: amount * 1e9, // Convert SOL to lamports
       })
     );
 
-    try {
-      await sendTransaction(transaction, connection);
-      console.log('Sent to treasury');
-    } catch (error) {
-      console.error('Transaction failed:', error);
-    }
+    await sendTransaction(transaction, connection);
+    console.log('Sent to treasury');
   };
 
   return (
@@ -84,11 +80,13 @@ const CoinflipGame = () => {
         sideChosen={sideChosen}
         setSideChosen={setSideChosen}
       />
+      {message && <p className="text-lg text-blue-400 mb-4">{message}</p>}
       <button
         onClick={handleFlip}
-        className="px-6 py-3 bg-green-500 rounded mb-4 hover:bg-green-600"
+        className={`px-6 py-3 bg-green-500 rounded mb-4 hover:bg-green-600 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+        disabled={isLoading}
       >
-        Flip Coin
+        {isLoading ? 'Processing...' : 'Flip Coin'}
       </button>
       <CoinflipResult result={result} />
     </div>
